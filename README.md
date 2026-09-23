@@ -1,33 +1,35 @@
-# Devis & Facturation
+# Invoicing & Quotes
 
-Application de gestion de devis et factures développée avec Laravel, pensée pour une PME ou un artisan indépendant.
+Quote and invoice management application built with Laravel, designed for small businesses and freelancers.
 
-## Cas d'usage
+## Use case
 
-Un artisan ou une petite entreprise a besoin de créer des devis, les convertir en factures une fois acceptés, suivre les paiements reçus, et éditer des documents PDF conformes.
+A freelancer or small business needs to create quotes, convert them into invoices once accepted, track received payments, and produce compliant PDF documents.
 
-## Fonctionnalités
+## Features
 
-- Gestion des clients (CRUD complet)
-- Création de devis avec lignes multiples et calcul automatique HT/TVA/TTC
-- Conversion devis → facture en un clic, avec numérotation légale séquentielle sans trou
-- Suivi des statuts (brouillon, envoyé, accepté, payé...)
-- Enregistrement des paiements (partiels ou complets), passage automatique en "payé"
-- Génération PDF des devis et factures
-- Interface responsive (Tailwind CSS)
+- Client management (full CRUD)
+- Quote creation with multiple line items and automatic subtotal/VAT/total calculation
+- One-click quote-to-invoice conversion, with gapless legal sequential numbering
+- Status tracking (draft, sent, accepted, paid...)
+- Payment recording (partial or full), with automatic "paid" status update
+- PDF generation for quotes and invoices
+- User authentication (Laravel Breeze)
+- Responsive interface (Tailwind CSS)
 
-## Stack technique
+## Tech stack
 
 - Laravel 13
 - Blade + Tailwind CSS
 - SQLite
-- DomPDF pour la génération de documents
+- Laravel Breeze (authentication)
+- DomPDF for document generation
 
 ## Installation
 
 \`\`\`bash
-git clone <url-du-repo>
-cd devis-facturation
+git clone https://github.com/Mountainbluesun/devis_facturation
+cd devis_facturation
 composer install
 npm install
 cp .env.example .env
@@ -39,19 +41,19 @@ npm run build
 php artisan serve
 \`\`\`
 
-## Captures d'écran
+## Screenshots
 
-### Liste des documents
-![Liste des documents](docs/liste-documents.png)
+### Document list
+![Document list](docs/liste-documents.png)
 
-### Détail d'une facture avec paiements
-![Détail facture](docs/detail-facture.png)
+### Invoice detail with payments
+![Invoice detail](docs/detail-facture.png)
 
-### Facture PDF générée
-![PDF facture](docs/pdf-facture.png)
+### Generated invoice PDF
+![Invoice PDF](docs/pdf-facture.png)
 
-## Limites connues / pistes d'évolution
+## Known limitations / roadmap
 
-- Pas d'authentification multi-utilisateurs (prototype mono-utilisateur)
-- Pas de gestion des avoirs (annulation de facture émise)
-- Pas d'export comptable
+- No credit notes (cancelling an issued invoice)
+- No accounting export
+
