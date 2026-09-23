@@ -8,7 +8,7 @@
         <h1 class="text-2xl font-semibold">Documents</h1>
         <a href="{{ route('documents.create') }}"
            class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700">
-            + Nouveau document
+            + New document
         </a>
     </div>
 
@@ -23,12 +23,5 @@
                 <span class="text-sm text-gray-700">{{ number_format($document->total_ttc, 2) }} €</span>
             </a>
         @empty
-            <p class="px-4 py-6 text-center text-gray-500">Aucun document pour le moment.</p>
+            <p class="px-4 py-6 text-center text-gray-500">No documents yet.</p>
         @endforelse
-    </div>
-
-    <div class="mt-6">
-        {{ $documents->links() }}
-    </div>
-
-@endsection

@@ -50,7 +50,7 @@ class DocumentController extends Controller
             $document->lines()->create($ligne);
         }
 
-        return redirect()->route('documents.show', $document)->with('success', 'Document créé avec succès.');
+        return redirect()->route('documents.show', $document)->with('success', 'Document created successfully.');
     }
 
     public function show(Document $document)
@@ -63,7 +63,7 @@ class DocumentController extends Controller
     {
         if ($document->statut === 'paye') {
             return redirect()->route('documents.show', $document)
-                ->with('error', 'Un document payé ne peut plus être modifié.');
+                ->with('error', 'A paid document can no longer be edited.');
         }
 
         $clients = Client::orderBy('nom')->get();
@@ -75,7 +75,7 @@ class DocumentController extends Controller
     {
         if ($document->statut === 'paye') {
             return redirect()->route('documents.show', $document)
-                ->with('error', 'Un document payé ne peut plus être modifié.');
+                ->with('error', 'A paid document can no longer be edited.Only a draft can be deleted.');
         }
 
         $validated = $request->validate([
@@ -92,11 +92,10 @@ class DocumentController extends Controller
     {
         if ($document->statut !== 'brouillon') {
             return redirect()->route('documents.index')
-                ->with('error', 'Seul un brouillon peut être supprimé.');
+               ->with('error', 'Only a draft can be deleted.');
         }
-
         $document->delete();
-        return redirect()->route('documents.index')->with('success', 'Document supprimé.');
+        return redirect()->route('documents.index')->with('success', 'Document deleted.');
     }
 
     // Action personnalisée, pas dans le CRUD standard
@@ -105,7 +104,7 @@ class DocumentController extends Controller
         try {
             $facture = $document->convertToInvoice();
             return redirect()->route('documents.show', $facture)
-                ->with('success', 'Facture générée avec succès.');
+                ->with('success', 'Invoice generated successfully.');
         } catch (\LogicException $e) {
             return redirect()->route('documents.show', $document)
                 ->with('error', $e->getMessage());

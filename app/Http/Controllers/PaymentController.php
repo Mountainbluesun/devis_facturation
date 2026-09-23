@@ -23,7 +23,7 @@ class PaymentController extends Controller
             );
 
             return redirect()->route('documents.show', $document)
-                ->with('success', 'Paiement enregistré.');
+                ->with('success', 'Payment recorded.');
         } catch (\LogicException $e) {
             return redirect()->route('documents.show', $document)
                 ->with('error', $e->getMessage());
@@ -40,6 +40,6 @@ class PaymentController extends Controller
         }
 
         return redirect()->route('documents.show', $document)
-            ->with('success', 'Paiement supprimé.');
+            ->with('success', 'Payment deleted.');
     }
 }

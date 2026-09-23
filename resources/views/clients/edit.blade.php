@@ -1,17 +1,17 @@
 @extends('layouts.app')
 
-@section('title', 'Modifier ' . $client->nom)
+@section('title', 'Edit ' . $client->nom)
 
 @section('content')
 
-    <h1 class="text-2xl font-semibold mb-6">Modifier {{ $client->nom }}</h1>
+    <h1 class="text-2xl font-semibold mb-6">Edit {{ $client->nom }}</h1>
 
     <form action="{{ route('clients.update', $client) }}" method="POST" class="bg-white rounded-lg border border-gray-200 p-6 space-y-4 max-w-lg">
         @csrf
         @method('PUT')
 
         <div>
-            <label for="nom" class="block text-sm font-medium text-gray-700 mb-1">Nom</label>
+            <label for="nom" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
             <input type="text" name="nom" id="nom" value="{{ old('nom', $client->nom) }}"
                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
             @error('nom')
@@ -29,7 +29,7 @@
         </div>
 
         <div>
-            <label for="adresse" class="block text-sm font-medium text-gray-700 mb-1">Adresse</label>
+            <label for="adresse" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
             <input type="text" name="adresse" id="adresse" value="{{ old('adresse', $client->adresse) }}"
                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
             @error('adresse')
@@ -38,7 +38,7 @@
         </div>
 
         <div>
-            <label for="siret" class="block text-sm font-medium text-gray-700 mb-1">SIRET</label>
+            <label for="siret" class="block text-sm font-medium text-gray-700 mb-1">Business ID (SIRET)</label>
             <input type="text" name="siret" id="siret" value="{{ old('siret', $client->siret) }}"
                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
             @error('siret')
@@ -49,11 +49,11 @@
         <div class="flex gap-3 pt-2">
             <button type="submit"
                     class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700">
-                Enregistrer
+                Save
             </button>
             <a href="{{ route('clients.show', $client) }}"
                class="text-gray-600 px-4 py-2 rounded-md text-sm hover:bg-gray-100">
-                Annuler
+                Cancel
             </a>
         </div>
 

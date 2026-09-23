@@ -74,11 +74,12 @@ class Document extends Model
 public function convertToInvoice(): self
 {
     if ($this->type !== 'devis') {
-        throw new \LogicException('Seul un devis peut être converti en facture.');
+        throw new \LogicException('Only a quote can be converted to an invoice.');
     }
 
+
     if ($this->statut !== 'accepte') {
-        throw new \LogicException('Le devis doit être accepté avant conversion.');
+        throw new \LogicException('The quote must be accepted before conversion.');
     }
 
     return DB::transaction(function () {
@@ -121,7 +122,7 @@ protected function solde(): Attribute
 public function enregistrerPaiement(float $montant, string $date, ?string $moyenPaiement = null): Payment
 {
     if ($this->type !== 'facture') {
-        throw new \LogicException('Seule une facture peut recevoir un paiement.');
+        throw new \LogicException('Only an invoice can receive a payment.');
     }
 
     return DB::transaction(function () use ($montant, $date, $moyenPaiement) {

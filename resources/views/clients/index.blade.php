@@ -8,7 +8,7 @@
         <h1 class="text-2xl font-semibold">Clients</h1>
         <a href="{{ route('clients.create') }}"
            class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700">
-            + Nouveau client
+            + New client
         </a>
     </div>
 
@@ -18,12 +18,12 @@
                class="flex items-center justify-between px-4 py-3 hover:bg-gray-50">
                 <div>
                     <p class="font-medium">{{ $client->nom }}</p>
-                    <p class="text-sm text-gray-500">{{ $client->email ?? 'Pas d\'email' }}</p>
+                    <p class="text-sm text-gray-500">{{ $client->email ?? 'No email' }}</p>
                 </div>
                 <span class="text-gray-400 text-sm">{{ $client->documents_count ?? '' }}</span>
             </a>
         @empty
-            <p class="px-4 py-6 text-center text-gray-500">Aucun client pour le moment.</p>
+            <p class="px-4 py-6 text-center text-gray-500">No clients yet.</p>
         @endforelse
     </div>
 

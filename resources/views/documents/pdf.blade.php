@@ -20,14 +20,14 @@
 
     <div class="header">
         <div>
-            <h1>{{ ucfirst($document->type) }}</h1>
+            <h1>{{ $document->type === 'devis' ? 'Quote' : 'Invoice' }}</h1>
             <p class="label">{{ $document->numero }}</p>
         </div>
         <div class="text-right">
             <p class="label">Date</p>
             <p>{{ $document->date_creation->format('d/m/Y') }}</p>
             @if ($document->date_echeance)
-                <p class="label">Échéance</p>
+                <p class="label">Due date</p>
                 <p>{{ $document->date_echeance->format('d/m/Y') }}</p>
             @endif
         </div>
@@ -40,38 +40,8 @@
             <p>{{ $document->client->adresse }}</p>
         @endif
         @if ($document->client->siret)
-            <p>SIRET : {{ $document->client->siret }}</p>
+            <p>Business ID (SIRET): {{ $document->client->siret }}</p>
         @endif
     </div>
 
     <table>
-        <thead>
-            <tr>
-                <th>Désignation</th>
-                <th class="text-right">Qté</th>
-                <th class="text-right">Prix unit.</th>
-                <th class="text-right">TVA</th>
-                <th class="text-right">Total HT</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($document->lines as $line)
-                <tr>
-                    <td>{{ $line->designation }}</td>
-                    <td class="text-right">{{ $line->quantite }}</td>
-                    <td class="text-right">{{ number_format($line->prix_unitaire, 2) }} €</td>
-                    <td class="text-right">{{ $line->taux_tva }}%</td>
-                    <td class="text-right">{{ number_format($line->quantite * $line->prix_unitaire, 2) }} €</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    <table class="totals">
-        <tr><td>Total HT</td><td class="text-right">{{ number_format($document->total_ht, 2) }} €</td></tr>
-        <tr><td>TVA</td><td class="text-right">{{ number_format($document->total_tva, 2) }} €</td></tr>
-        <tr class="final"><td>Total TTC</td><td class="text-right">{{ number_format($document->total_ttc, 2) }} €</td></tr>
-    </table>
-
-</body>
-</html>

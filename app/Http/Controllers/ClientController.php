@@ -29,7 +29,7 @@ class ClientController extends Controller
 
         Client::create($validated);
 
-        return redirect()->route('clients.index')->with('success', 'Client créé avec succès.');
+        return redirect()->route('clients.index')->with('success', 'Client created successfully.');
     }
 
     public function show(Client $client)
@@ -54,12 +54,12 @@ class ClientController extends Controller
 
         $client->update($validated);
 
-        return redirect()->route('clients.index')->with('success', 'Client mis à jour.');
+        return redirect()->route('clients.index')->with('success', 'Client updated.');
     }
 
     public function destroy(Client $client)
     {
         $client->delete();
-        return redirect()->route('clients.index')->with('success', 'Client supprimé.');
+        return redirect()->route('clients.index')->with('success', 'Client deleted.');
     }
 }
