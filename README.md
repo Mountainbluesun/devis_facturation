@@ -1,5 +1,7 @@
 # Invoicing & Quotes
 
+🔗 **Live demo:** [devis.jeremylebrun.dev](https://devis.jeremylebrun.dev)
+
 Quote and invoice management application built with Laravel, designed for small businesses and freelancers.
 
 ## Use case
