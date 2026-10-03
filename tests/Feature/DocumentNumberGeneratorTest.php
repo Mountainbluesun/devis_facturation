@@ -56,5 +56,31 @@ class DocumentNumberGeneratorTest extends TestCase
 
     $this->assertSame('FACT-2026-008', $number);
 }
+    public function test_numbering_continues_after_999(): void
+{
+    Carbon::setTestNow('2026-05-10');
+
+    $client = Client::create([
+        'nom' => 'Test Client',
+        'email' => 'client@example.com',
+        'adresse' => '1 rue de Test, 69000 Lyon',
+        'siret' => '12345678901234',
+    ]);
+
+    foreach (['FACT-2026-999', 'FACT-2026-1000'] as $numero) {
+        Document::create([
+            'type' => 'facture',
+            'numero' => $numero,
+            'client_id' => $client->id,
+            'statut' => 'brouillon',
+            'date_creation' => now(),
+            'date_echeance' => now()->addDays(30),
+        ]);
+    }
+
+    $number = (new DocumentNumberGenerator())->generate('facture');
+
+    $this->assertSame('FACT-2026-1001', $number);
+}
 
 }
