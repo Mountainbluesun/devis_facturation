@@ -90,6 +90,10 @@ class DocumentController extends Controller
 
     public function destroy(Document $document)
     {
+        if ($document->type === 'facture') {
+           return redirect()->route('documents.index')
+               ->with('error', 'An invoice cannot be deleted.');
+}
         if ($document->statut !== 'brouillon') {
             return redirect()->route('documents.index')
                ->with('error', 'Only a draft can be deleted.');
