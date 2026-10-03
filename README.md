@@ -64,6 +64,7 @@ The test suite covers quote totals, document numbering, quote-to-invoice convers
 
 ## Known limitations / roadmap
 
+- No per-user data isolation: all authenticated users share the same clients and documents (single-tenant prototype)
 - No credit notes (cancelling an issued invoice)
 - No accounting export
 
