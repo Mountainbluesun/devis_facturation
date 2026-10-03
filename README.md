@@ -1,5 +1,7 @@
 # Invoicing & Quotes
 
+[![Tests](https://github.com/Mountainbluesun/devis_facturation/actions/workflows/tests.yml/badge.svg)](https://github.com/Mountainbluesun/devis_facturation/actions/workflows/tests.yml)
+
 🔗 **Live demo:** [devis.jeremylebrun.dev](https://devis.jeremylebrun.dev)
 
 Quote and invoice management application built with Laravel, designed for small businesses and freelancers.
@@ -42,6 +44,12 @@ php artisan db:seed --class=DemoSeeder
 npm run build
 php artisan serve
 \`\`\`
+## Running tests
+
+```bash
+php artisan test
+```
+The test suite covers quote totals, document numbering, quote-to-invoice conversion and payments. Tests run automatically on every push through GitHub Actions.
 
 ## Screenshots
 
