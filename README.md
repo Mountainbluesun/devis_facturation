@@ -49,7 +49,10 @@ php artisan serve
 ```bash
 php artisan test
 ```
-The test suite covers quote totals, document numbering, quote-to-invoice conversion and payments. Tests run automatically on every push through GitHub Actions.
+
+The test suite covers quote totals, document numbering, quote-to-invoice conversion, payments and invoice deletion rules.
+
+Tests run automatically on every push and pull request through GitHub Actions: the workflow installs PHP 8.3 and the dependencies, builds the front-end assets, then runs `php artisan test` (see `.github/workflows/tests.yml`).
 
 ## Screenshots
 
