@@ -31,7 +31,7 @@ A freelancer or small business needs to create quotes, convert them into invoice
 
 ## Installation
 
-\`\`\`bash
+```bash
 git clone https://github.com/Mountainbluesun/devis_facturation
 cd devis_facturation
 composer install
@@ -43,7 +43,7 @@ php artisan migrate
 php artisan db:seed --class=DemoSeeder
 npm run build
 php artisan serve
-\`\`\`
+```
 ## Running tests
 
 ```bash
