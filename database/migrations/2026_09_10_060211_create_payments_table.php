@@ -11,9 +11,9 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('document_id')->constrained()->cascadeOnDelete();
-            $table->decimal('montant', 10, 2);
+            $table->decimal('amount', 10, 2);
             $table->date('date');
-            $table->string('moyen_paiement')->nullable();
+            $table->string('payment_method')->nullable();
             $table->timestamps();
         });
     }

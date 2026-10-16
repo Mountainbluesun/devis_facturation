@@ -1,35 +1,35 @@
 @extends('layouts.app')
 
-@section('title', 'Edit ' . $document->numero)
+@section('title', 'Edit ' . $document->number)
 
 @section('content')
 
-    <h1 class="text-2xl font-semibold mb-6">Edit {{ $document->numero }}</h1>
+    <h1 class="text-2xl font-semibold mb-6">Edit {{ $document->number }}</h1>
 
     <form action="{{ route('documents.update', $document) }}" method="POST" class="bg-white rounded-lg border border-gray-200 p-6 space-y-4 max-w-lg">
         @csrf
         @method('PUT')
 
         <div>
-            <label for="statut" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-            <select name="statut" id="statut" class="w-full rounded-md border-gray-300 shadow-sm text-sm">
-                @foreach (['brouillon' => 'Draft', 'envoye' => 'Sent', 'accepte' => 'Accepted', 'refuse' => 'Refused', 'paye' => 'Paid', 'en_retard' => 'Overdue'] as $value => $label)
-                    <option value="{{ $value }}" {{ old('statut', $document->statut) == $value ? 'selected' : '' }}>
+            <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+            <select name="status" id="status" class="w-full rounded-md border-gray-300 shadow-sm text-sm">
+                @foreach (['draft' => 'Draft', 'sent' => 'Sent', 'accepted' => 'Accepted', 'rejected' => 'Refused', 'paid' => 'Paid', 'overdue' => 'Overdue'] as $value => $label)
+                    <option value="{{ $value }}" {{ old('status', $document->status) == $value ? 'selected' : '' }}>
                         {{ $label }}
                     </option>
                 @endforeach
             </select>
-            @error('statut')
+            @error('status')
                 <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
             @enderror
         </div>
 
         <div>
-            <label for="date_echeance" class="block text-sm font-medium text-gray-700 mb-1">Due date</label>
-            <input type="date" name="date_echeance" id="date_echeance"
-                   value="{{ old('date_echeance', $document->date_echeance?->format('Y-m-d')) }}"
+            <label for="due_date" class="block text-sm font-medium text-gray-700 mb-1">Due date</label>
+            <input type="date" name="due_date" id="due_date"
+                   value="{{ old('due_date', $document->due_date?->format('Y-m-d')) }}"
                    class="rounded-md border-gray-300 shadow-sm text-sm">
-            @error('date_echeance')
+            @error('due_date')
                 <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
             @enderror
         </div>

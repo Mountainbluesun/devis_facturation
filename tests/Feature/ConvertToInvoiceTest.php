@@ -19,26 +19,26 @@ class ConvertToInvoiceTest extends TestCase
     $user ??= User::factory()->create();
 
     $client = $user->clients()->create([
-        'nom' => 'Test Client',
+        'name' => 'Test Client',
         'email' => 'client@example.com',
-        'adresse' => '1 rue de Test, 69000 Lyon',
-        'siret' => '12345678901234',
+        'address' => '1 rue de Test, 69000 Lyon',
+        'tax_id' => '12345678901234',
     ]);
 
     $quote = $user->documents()->create([
-        'type' => 'devis',
-        'numero' => 'DEV-2026-001',
+        'type' => 'quote',
+        'number' => 'QUO-2026-001',
         'client_id' => $client->id,
-        'statut' => $status,
-        'date_creation' => now(),
-        'date_echeance' => now()->addDays(30),
+        'status' => $status,
+        'issue_date' => now(),
+        'due_date' => now()->addDays(30),
     ]);
 
     $quote->lines()->create([
-        'designation' => 'Service A',
-        'quantite' => 2,
-        'prix_unitaire' => 100,
-        'taux_tva' => 20,
+        'description' => 'Service A',
+        'quantity' => 2,
+        'unit_price' => 100,
+        'vat_rate' => 20,
     ]);
 
     return $quote;
@@ -48,21 +48,21 @@ class ConvertToInvoiceTest extends TestCase
     {
         Carbon::setTestNow('2026-05-10');
 
-        $quote = $this->createQuote('accepte');
+        $quote = $this->createQuote('accepted');
 
         $invoice = $quote->convertToInvoice();
 
-        $this->assertSame('facture', $invoice->type);
-        $this->assertSame('FACT-2026-001', $invoice->numero);
-        $this->assertSame('brouillon', $invoice->statut);
+        $this->assertSame('invoice', $invoice->type);
+        $this->assertSame('INV-2026-001', $invoice->number);
+        $this->assertSame('draft', $invoice->status);
         $this->assertSame($quote->client_id, $invoice->client_id);
         $this->assertCount(1, $invoice->lines);
-        $this->assertEquals(200, $invoice->total_ht);
+        $this->assertEquals(200, $invoice->subtotal);
     }
 
     public function test_quote_that_is_not_accepted_cannot_be_converted(): void
     {
-        $quote = $this->createQuote('brouillon');
+        $quote = $this->createQuote('draft');
 
         $this->expectException(LogicException::class);
 
@@ -72,7 +72,7 @@ class ConvertToInvoiceTest extends TestCase
     public function test_converted_invoice_belongs_to_the_same_user(): void
 {
     $user = User::factory()->create();
-    $quote = $this->createQuote('accepte', $user);
+    $quote = $this->createQuote('accepted', $user);
 
     $invoice = $quote->convertToInvoice();
 

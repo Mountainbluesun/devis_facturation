@@ -14,19 +14,19 @@ class DocumentTotalsTest extends TestCase
 
         $document->setRelation('lines', collect([
             (new DocumentLine())->forceFill([
-                'quantite' => 2,
-                'prix_unitaire' => 100,
-                'taux_tva' => 20,
+                'quantity' => 2,
+                'unit_price' => 100,
+                'vat_rate' => 20,
             ]),
             (new DocumentLine())->forceFill([
-                'quantite' => 1,
-                'prix_unitaire' => 50,
-                'taux_tva' => 10,
+                'quantity' => 1,
+                'unit_price' => 50,
+                'vat_rate' => 10,
             ]),
         ]));
 
-        $this->assertEqualsWithDelta(250, $document->total_ht, 0.001);
-        $this->assertEqualsWithDelta(45, $document->total_tva, 0.001);
-        $this->assertEqualsWithDelta(295, $document->total_ttc, 0.001);
+        $this->assertEqualsWithDelta(250, $document->subtotal, 0.001);
+        $this->assertEqualsWithDelta(45, $document->vat_amount, 0.001);
+        $this->assertEqualsWithDelta(295, $document->total, 0.001);
     }
 }

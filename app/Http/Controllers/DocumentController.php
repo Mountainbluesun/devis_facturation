@@ -18,36 +18,36 @@ class DocumentController extends Controller
 
     public function create()
     {
-        $clients = Client::orderBy('nom')->get();
+        $clients = Client::orderBy('name')->get();
         return view('documents.create', compact('clients'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'type' => 'required|in:devis,facture',
+            'type' => 'required|in:quote,invoice',
             'client_id' => 'required|exists:clients,id',
-            'date_echeance' => 'nullable|date',
-            'lignes' => 'required|array|min:1',
-            'lignes.*.designation' => 'required|string|max:255',
-            'lignes.*.quantite' => 'required|numeric|min:0.01',
-            'lignes.*.prix_unitaire' => 'required|numeric|min:0',
-            'lignes.*.taux_tva' => 'required|numeric|min:0|max:100',
+            'due_date' => 'nullable|date',
+            'lines' => 'required|array|min:1',
+            'lines.*.description' => 'required|string|max:255',
+            'lines.*.quantity' => 'required|numeric|min:0.01',
+            'lines.*.unit_price' => 'required|numeric|min:0',
+            'lines.*.vat_rate' => 'required|numeric|min:0|max:100',
         ]);
 
         $generator = new DocumentNumberGenerator();
 
         $document = auth()->user()->documents()->create([
             'type' => $validated['type'],
-            'numero' => $generator->generate($validated['type']),
+            'number' => $generator->generate($validated['type']),
             'client_id' => $validated['client_id'],
-            'statut' => 'brouillon',
-            'date_creation' => now(),
-            'date_echeance' => $validated['date_echeance'] ?? null,
+            'status' => 'draft',
+            'issue_date' => now(),
+            'due_date' => $validated['due_date'] ?? null,
         ]);
 
-        foreach ($validated['lignes'] as $ligne) {
-            $document->lines()->create($ligne);
+        foreach ($validated['lines'] as $line) {
+            $document->lines()->create($line);
         }
 
         return redirect()->route('documents.show', $document)->with('success', 'Document created successfully.');
@@ -64,12 +64,12 @@ class DocumentController extends Controller
     {
         $this->ensureOwnership($document);
 
-        if ($document->statut === 'paye') {
+        if ($document->status === 'paid') {
             return redirect()->route('documents.show', $document)
                 ->with('error', 'A paid document can no longer be edited.');
         }
 
-        $clients = Client::orderBy('nom')->get();
+        $clients = Client::orderBy('name')->get();
         $document->load('lines');
         return view('documents.edit', compact('document', 'clients'));
     }
@@ -78,30 +78,30 @@ class DocumentController extends Controller
     {
         $this->ensureOwnership($document);
 
-        if ($document->statut === 'paye') {
+        if ($document->status === 'paid') {
             return redirect()->route('documents.show', $document)
                 ->with('error', 'A paid document can no longer be edited.Only a draft can be deleted.');
         }
 
         $validated = $request->validate([
-            'statut' => 'required|in:brouillon,envoye,accepte,refuse,paye,en_retard',
-            'date_echeance' => 'nullable|date',
+            'status' => 'required|in:draft,sent,accepted,rejected,paid,overdue',
+            'due_date' => 'nullable|date',
         ]);
 
         $document->update($validated);
 
-        return redirect()->route('documents.show', $document)->with('success', 'Document mis à jour.');
+        return redirect()->route('documents.show', $document)->with('success', 'Document updated.');
     }
 
     public function destroy(Document $document)
     {
         $this->ensureOwnership($document);
 
-        if ($document->type === 'facture') {
+        if ($document->type === 'invoice') {
            return redirect()->route('documents.index')
                ->with('error', 'An invoice cannot be deleted.');
 }
-        if ($document->statut !== 'brouillon') {
+        if ($document->status !== 'draft') {
             return redirect()->route('documents.index')
                ->with('error', 'Only a draft can be deleted.');
         }
@@ -115,8 +115,8 @@ class DocumentController extends Controller
         $this->ensureOwnership($document);
 
         try {
-            $facture = $document->convertToInvoice();
-            return redirect()->route('documents.show', $facture)
+            $invoice = $document->convertToInvoice();
+            return redirect()->route('documents.show', $invoice)
                 ->with('success', 'Invoice generated successfully.');
         } catch (\LogicException $e) {
             return redirect()->route('documents.show', $document)
@@ -134,7 +134,7 @@ public function downloadPdf(Document $document)
 
     $pdf = Pdf::loadView('documents.pdf', compact('document'));
 
-    return $pdf->download($document->numero . '.pdf');
+    return $pdf->download($document->number . '.pdf');
 }
 
 private function ensureOwnership(Document $document): void

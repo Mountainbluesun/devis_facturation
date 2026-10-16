@@ -11,10 +11,10 @@ return new class extends Migration
         Schema::create('document_lines', function (Blueprint $table) {
             $table->id();
             $table->foreignId('document_id')->constrained()->cascadeOnDelete();
-            $table->string('designation');
-            $table->decimal('quantite', 8, 2)->default(1);
-            $table->decimal('prix_unitaire', 10, 2);
-            $table->decimal('taux_tva', 5, 2)->default(20.00);
+            $table->string('description');
+            $table->decimal('quantity', 8, 2)->default(1);
+            $table->decimal('unit_price', 10, 2);
+            $table->decimal('vat_rate', 5, 2)->default(20.00);
             $table->timestamps();
         });
     }

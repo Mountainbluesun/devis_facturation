@@ -16,17 +16,17 @@ class Document extends Model
 
     protected $fillable = [
         'type',
-        'numero',
+        'number',
         'client_id',
         'user_id',
-        'statut',
-        'date_creation',
-        'date_echeance',
+        'status',
+        'issue_date',
+        'due_date',
     ];
 
     protected $casts = [
-        'date_creation' => 'date',
-        'date_echeance' => 'date',
+        'issue_date' => 'date',
+        'due_date' => 'date',
     ];
 
     public function client(): BelongsTo
@@ -49,42 +49,42 @@ class Document extends Model
         return $this->hasMany(Payment::class);
     }
 
-    // Total HT = somme des (quantite * prix_unitaire) de chaque ligne
-    protected function totalHt(): Attribute
+    // Total HT = somme des (quantity * unit_price) de chaque line
+    protected function subtotal(): Attribute
     {
         return Attribute::make(
             get: fn () => $this->lines->sum(
-                fn ($line) => $line->quantite * $line->prix_unitaire
+                fn ($line) => $line->quantity * $line->unit_price
             ),
         );
     }
 
-    // Total TVA = somme de la TVA de chaque ligne
-    protected function totalTva(): Attribute
+    // Total TVA = somme de la TVA de chaque line
+    protected function vatAmount(): Attribute
     {
         return Attribute::make(
             get: fn () => $this->lines->sum(
-                fn ($line) => $line->quantite * $line->prix_unitaire * ($line->taux_tva / 100)
+                fn ($line) => $line->quantity * $line->unit_price * ($line->vat_rate / 100)
             ),
         );
     }
 
     // Total TTC = HT + TVA
-    protected function totalTtc(): Attribute
+    protected function total(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->total_ht + $this->total_tva,
+            get: fn () => $this->subtotal + $this->vat_amount,
         );
     }
 
 public function convertToInvoice(): self
 {
-    if ($this->type !== 'devis') {
+    if ($this->type !== 'quote') {
         throw new \LogicException('Only a quote can be converted to an invoice.');
     }
 
 
-    if ($this->statut !== 'accepte') {
+    if ($this->status !== 'accepted') {
         throw new \LogicException('The quote must be accepted before conversion.');
     }
 
@@ -92,57 +92,57 @@ public function convertToInvoice(): self
         $generator = new DocumentNumberGenerator();
 
         $invoice = self::create([
-            'type' => 'facture',
-            'numero' => $generator->generate('facture'),
+            'type' => 'invoice',
+            'number' => $generator->generate('invoice'),
             'client_id' => $this->client_id,
             'user_id' => $this->user_id,
-            'statut' => 'brouillon',
-            'date_creation' => now(),
-            'date_echeance' => now()->addDays(30),
+            'status' => 'draft',
+            'issue_date' => now(),
+            'due_date' => now()->addDays(30),
         ]);
 
         foreach ($this->lines as $line) {
             $invoice->lines()->create([
-                'designation' => $line->designation,
-                'quantite' => $line->quantite,
-                'prix_unitaire' => $line->prix_unitaire,
-                'taux_tva' => $line->taux_tva,
+                'description' => $line->description,
+                'quantity' => $line->quantity,
+                'unit_price' => $line->unit_price,
+                'vat_rate' => $line->vat_rate,
             ]);
         }
 
         return $invoice;
     });
 }
-protected function totalPaye(): Attribute
+protected function totalPaid(): Attribute
 {
     return Attribute::make(
-        get: fn () => $this->payments->sum('montant'),
+        get: fn () => $this->payments->sum('amount'),
     );
 }
 
-protected function solde(): Attribute
+protected function balance(): Attribute
 {
     return Attribute::make(
-        get: fn () => $this->total_ttc - $this->total_paye,
+        get: fn () => $this->total - $this->total_paid,
     );
 }
-public function enregistrerPaiement(float $montant, string $date, ?string $moyenPaiement = null): Payment
+public function recordPayment(float $amount, string $date, ?string $paymentMethod = null): Payment
 {
-    if ($this->type !== 'facture') {
+    if ($this->type !== 'invoice') {
         throw new \LogicException('Only an invoice can receive a payment.');
     }
 
-    return DB::transaction(function () use ($montant, $date, $moyenPaiement) {
+    return DB::transaction(function () use ($amount, $date, $paymentMethod) {
         $payment = $this->payments()->create([
-            'montant' => $montant,
+            'amount' => $amount,
             'date' => $date,
-            'moyen_paiement' => $moyenPaiement,
+            'payment_method' => $paymentMethod,
         ]);
 
         $this->refresh();
 
-        if ($this->solde <= 0) {
-            $this->update(['statut' => 'paye']);
+        if ($this->balance <= 0) {
+            $this->update(['status' => 'paid']);
         }
 
         return $payment;

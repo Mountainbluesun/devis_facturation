@@ -10,16 +10,16 @@ class PaymentController extends Controller
     public function store(Request $request, Document $document)
     {
         $validated = $request->validate([
-            'montant' => 'required|numeric|min:0.01',
+            'amount' => 'required|numeric|min:0.01',
             'date' => 'required|date',
-            'moyen_paiement' => 'nullable|string|max:255',
+            'payment_method' => 'nullable|string|max:255',
         ]);
 
         try {
-            $document->enregistrerPaiement(
-                $validated['montant'],
+            $document->recordPayment(
+                $validated['amount'],
                 $validated['date'],
-                $validated['moyen_paiement'] ?? null
+                $validated['payment_method'] ?? null
             );
 
             return redirect()->route('documents.show', $document)
@@ -34,9 +34,9 @@ class PaymentController extends Controller
     {
         $payment->delete();
 
-        // Si on annule un paiement, le document ne peut plus être "payé"
-        if ($document->statut === 'paye') {
-            $document->update(['statut' => 'envoye']);
+        // If a payment is cancelled, the document can no longer be "paid"
+        if ($document->status === 'paid') {
+            $document->update(['status' => 'sent']);
         }
 
         return redirect()->route('documents.show', $document)

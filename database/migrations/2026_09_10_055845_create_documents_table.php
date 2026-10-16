@@ -10,13 +10,13 @@ return new class extends Migration
     {
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
-            $table->enum('type', ['devis', 'facture']);
-            $table->string('numero')->unique();
+            $table->enum('type', ['quote', 'invoice']);
+            $table->string('number')->unique();
             $table->foreignId('client_id')->constrained()->cascadeOnDelete();
-            $table->enum('statut', ['brouillon', 'envoye', 'accepte', 'refuse', 'paye', 'en_retard'])
-                  ->default('brouillon');
-            $table->date('date_creation');
-            $table->date('date_echeance')->nullable();
+            $table->enum('status', ['draft', 'sent', 'accepted', 'rejected', 'paid', 'overdue'])
+                  ->default('draft');
+            $table->date('issue_date');
+            $table->date('due_date')->nullable();
             $table->timestamps();
         });
     }

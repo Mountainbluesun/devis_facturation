@@ -10,10 +10,10 @@ return new class extends Migration
     {
         Schema::create('clients', function (Blueprint $table) {
             $table->id();
-            $table->string('nom');
+            $table->string('name');
             $table->string('email')->nullable();
-            $table->string('adresse')->nullable();
-            $table->string('siret', 14)->nullable();
+            $table->string('address')->nullable();
+            $table->string('tax_id', 14)->nullable();
             $table->timestamps();
         });
     }

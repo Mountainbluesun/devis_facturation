@@ -12,10 +12,10 @@ class Client extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nom',
+        'name',
         'email',
-        'adresse',
-        'siret',
+        'address',
+        'tax_id',
     ];
 
     public function documents(): HasMany

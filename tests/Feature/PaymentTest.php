@@ -16,26 +16,26 @@ class PaymentTest extends TestCase
     private function createDocument(string $type): Document
     {
         $client = Client::create([
-            'nom' => 'Test Client',
+            'name' => 'Test Client',
             'email' => 'client@example.com',
-            'adresse' => '1 rue de Test, 69000 Lyon',
-            'siret' => '12345678901234',
+            'address' => '1 rue de Test, 69000 Lyon',
+            'tax_id' => '12345678901234',
         ]);
 
         $document = Document::create([
             'type' => $type,
-            'numero' => $type === 'facture' ? 'FACT-2026-001' : 'DEV-2026-001',
+            'number' => $type === 'invoice' ? 'INV-2026-001' : 'QUO-2026-001',
             'client_id' => $client->id,
-            'statut' => 'envoye',
-            'date_creation' => now(),
-            'date_echeance' => now()->addDays(30),
+            'status' => 'sent',
+            'issue_date' => now(),
+            'due_date' => now()->addDays(30),
         ]);
 
         $document->lines()->create([
-            'designation' => 'Service A',
-            'quantite' => 2,
-            'prix_unitaire' => 100,
-            'taux_tva' => 20,
+            'description' => 'Service A',
+            'quantity' => 2,
+            'unit_price' => 100,
+            'vat_rate' => 20,
         ]);
 
         return $document;
@@ -43,35 +43,35 @@ class PaymentTest extends TestCase
 
     public function test_partial_payment_does_not_mark_the_invoice_as_paid(): void
     {
-        $invoice = $this->createDocument('facture');
+        $invoice = $this->createDocument('invoice');
 
-        $invoice->enregistrerPaiement(100, '2026-05-10', 'virement');
+        $invoice->recordPayment(100, '2026-05-10', 'bank transfer');
 
         $invoice->refresh();
 
-        $this->assertSame('envoye', $invoice->statut);
-        $this->assertEquals(140, $invoice->solde);
+        $this->assertSame('sent', $invoice->status);
+        $this->assertEquals(140, $invoice->balance);
     }
 
     public function test_full_payment_marks_the_invoice_as_paid(): void
     {
-        $invoice = $this->createDocument('facture');
+        $invoice = $this->createDocument('invoice');
 
-        $invoice->enregistrerPaiement(100, '2026-05-10', 'virement');
-        $invoice->enregistrerPaiement(140, '2026-05-20', 'cheque');
+        $invoice->recordPayment(100, '2026-05-10', 'bank transfer');
+        $invoice->recordPayment(140, '2026-05-20', 'check');
 
         $invoice->refresh();
 
-        $this->assertSame('paye', $invoice->statut);
-        $this->assertEquals(0, $invoice->solde);
+        $this->assertSame('paid', $invoice->status);
+        $this->assertEquals(0, $invoice->balance);
     }
 
     public function test_a_quote_cannot_receive_a_payment(): void
     {
-        $quote = $this->createDocument('devis');
+        $quote = $this->createDocument('quote');
 
         $this->expectException(LogicException::class);
 
-        $quote->enregistrerPaiement(100, '2026-05-10');
+        $quote->recordPayment(100, '2026-05-10');
     }
 }

@@ -1,20 +1,20 @@
 @extends('layouts.app')
 
-@section('title', 'Edit ' . $client->nom)
+@section('title', 'Edit ' . $client->name)
 
 @section('content')
 
-    <h1 class="text-2xl font-semibold mb-6">Edit {{ $client->nom }}</h1>
+    <h1 class="text-2xl font-semibold mb-6">Edit {{ $client->name }}</h1>
 
     <form action="{{ route('clients.update', $client) }}" method="POST" class="bg-white rounded-lg border border-gray-200 p-6 space-y-4 max-w-lg">
         @csrf
         @method('PUT')
 
         <div>
-            <label for="nom" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
-            <input type="text" name="nom" id="nom" value="{{ old('nom', $client->nom) }}"
+            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+            <input type="text" name="name" id="name" value="{{ old('name', $client->name) }}"
                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
-            @error('nom')
+            @error('name')
                 <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
             @enderror
         </div>
@@ -29,19 +29,19 @@
         </div>
 
         <div>
-            <label for="adresse" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
-            <input type="text" name="adresse" id="adresse" value="{{ old('adresse', $client->adresse) }}"
+            <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+            <input type="text" name="address" id="address" value="{{ old('address', $client->address) }}"
                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
-            @error('adresse')
+            @error('address')
                 <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
             @enderror
         </div>
 
         <div>
-            <label for="siret" class="block text-sm font-medium text-gray-700 mb-1">Business ID (SIRET)</label>
-            <input type="text" name="siret" id="siret" value="{{ old('siret', $client->siret) }}"
+            <label for="tax_id" class="block text-sm font-medium text-gray-700 mb-1">Business ID (SIRET)</label>
+            <input type="text" name="tax_id" id="tax_id" value="{{ old('tax_id', $client->tax_id) }}"
                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
-            @error('siret')
+            @error('tax_id')
                 <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
             @enderror
         </div>

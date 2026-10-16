@@ -15,19 +15,19 @@ class DocumentConstraintsTest extends TestCase
     public function test_two_documents_cannot_share_the_same_number(): void
     {
         $client = Client::create([
-            'nom' => 'Test Client',
+            'name' => 'Test Client',
             'email' => 'client@example.com',
-            'adresse' => '1 rue de Test, 69000 Lyon',
-            'siret' => '12345678901234',
+            'address' => '1 rue de Test, 69000 Lyon',
+            'tax_id' => '12345678901234',
         ]);
 
         $attributes = [
-            'type' => 'facture',
-            'numero' => 'FACT-2026-001',
+            'type' => 'invoice',
+            'number' => 'INV-2026-001',
             'client_id' => $client->id,
-            'statut' => 'brouillon',
-            'date_creation' => now(),
-            'date_echeance' => now()->addDays(30),
+            'status' => 'draft',
+            'issue_date' => now(),
+            'due_date' => now()->addDays(30),
         ];
 
         Document::create($attributes);

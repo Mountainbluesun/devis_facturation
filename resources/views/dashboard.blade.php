@@ -6,14 +6,9 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
-                    <a href="{{ route('clients.index') }}" class="text-blue-600 hover:underline text-sm">Voir les clients</a>
-                    <a href="{{ route('documents.index') }}" class="text-blue-600 hover:underline text-sm">Voir les documents</a>
-                </div>
-            </div>
-
-            </div>
-
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-x-4">
+            <a href="{{ route('clients.index') }}" class="text-blue-600 hover:underline text-sm">View clients</a>
+            <a href="{{ route('documents.index') }}" class="text-blue-600 hover:underline text-sm">View documents</a>
         </div>
     </div>
 </x-app-layout>

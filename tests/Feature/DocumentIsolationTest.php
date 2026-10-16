@@ -11,17 +11,17 @@ class DocumentIsolationTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function createDocumentFor(User $user, string $numero): Document
+    private function createDocumentFor(User $user, string $number): Document
     {
-        $client = $user->clients()->create(['nom' => 'Client of user ' . $user->id]);
+        $client = $user->clients()->create(['name' => 'Client of user ' . $user->id]);
 
         return $user->documents()->create([
-            'type' => 'devis',
-            'numero' => $numero,
+            'type' => 'quote',
+            'number' => $number,
             'client_id' => $client->id,
-            'statut' => 'brouillon',
-            'date_creation' => now(),
-            'date_echeance' => now()->addDays(30),
+            'status' => 'draft',
+            'issue_date' => now(),
+            'due_date' => now()->addDays(30),
         ]);
     }
 
@@ -30,13 +30,13 @@ class DocumentIsolationTest extends TestCase
         $marie = User::factory()->create();
         $paul = User::factory()->create();
 
-        $this->createDocumentFor($marie, 'DEV-2026-001');
-        $this->createDocumentFor($paul, 'DEV-2026-002');
+        $this->createDocumentFor($marie, 'QUO-2026-001');
+        $this->createDocumentFor($paul, 'QUO-2026-002');
 
         $response = $this->actingAs($marie)->get(route('documents.index'));
 
-        $response->assertSee('DEV-2026-001');
-        $response->assertDontSee('DEV-2026-002');
+        $response->assertSee('QUO-2026-001');
+        $response->assertDontSee('QUO-2026-002');
     }
 
     public function test_user_cannot_open_another_users_document(): void
@@ -44,7 +44,7 @@ class DocumentIsolationTest extends TestCase
     $marie = User::factory()->create();
     $paul = User::factory()->create();
 
-    $paulDocument = $this->createDocumentFor($paul, 'DEV-2026-002');
+    $paulDocument = $this->createDocumentFor($paul, 'QUO-2026-002');
 
     $this->actingAs($marie)
         ->get(route('documents.show', $paulDocument))
@@ -56,7 +56,7 @@ public function test_user_cannot_open_the_edit_form_of_another_users_document():
     $marie = User::factory()->create();
     $paul = User::factory()->create();
 
-    $paulDocument = $this->createDocumentFor($paul, 'DEV-2026-002');
+    $paulDocument = $this->createDocumentFor($paul, 'QUO-2026-002');
 
     $this->actingAs($marie)
         ->get(route('documents.edit', $paulDocument))
@@ -68,13 +68,13 @@ public function test_user_cannot_update_another_users_document(): void
     $marie = User::factory()->create();
     $paul = User::factory()->create();
 
-    $paulDocument = $this->createDocumentFor($paul, 'DEV-2026-002');
+    $paulDocument = $this->createDocumentFor($paul, 'QUO-2026-002');
 
     $this->actingAs($marie)
-        ->put(route('documents.update', $paulDocument), ['statut' => 'envoye'])
+        ->put(route('documents.update', $paulDocument), ['status' => 'sent'])
         ->assertNotFound();
 
-    $this->assertDatabaseHas('documents', ['id' => $paulDocument->id, 'statut' => 'brouillon']);
+    $this->assertDatabaseHas('documents', ['id' => $paulDocument->id, 'status' => 'draft']);
 }
 
 public function test_user_cannot_delete_another_users_document(): void
@@ -82,7 +82,7 @@ public function test_user_cannot_delete_another_users_document(): void
     $marie = User::factory()->create();
     $paul = User::factory()->create();
 
-    $paulDocument = $this->createDocumentFor($paul, 'DEV-2026-002');
+    $paulDocument = $this->createDocumentFor($paul, 'QUO-2026-002');
 
     $this->actingAs($marie)
         ->delete(route('documents.destroy', $paulDocument))
@@ -93,17 +93,17 @@ public function test_user_cannot_delete_another_users_document(): void
     public function test_created_document_belongs_to_the_logged_in_user(): void
 {
     $marie = User::factory()->create();
-    $marieClient = $marie->clients()->create(['nom' => 'Marie Client']);
+    $marieClient = $marie->clients()->create(['name' => 'Marie Client']);
 
     $this->actingAs($marie)->post(route('documents.store'), [
-        'type' => 'devis',
+        'type' => 'quote',
         'client_id' => $marieClient->id,
-        'lignes' => [
+        'lines' => [
             [
-                'designation' => 'Service A',
-                'quantite' => 1,
-                'prix_unitaire' => 100,
-                'taux_tva' => 20,
+                'description' => 'Service A',
+                'quantity' => 1,
+                'unit_price' => 100,
+                'vat_rate' => 20,
             ],
         ],
     ]);
@@ -119,14 +119,14 @@ public function test_user_cannot_delete_another_users_document(): void
     $marie = User::factory()->create();
     $paul = User::factory()->create();
 
-    $paulQuote = $this->createDocumentFor($paul, 'DEV-2026-002');
-    $paulQuote->update(['statut' => 'accepte']);
+    $paulQuote = $this->createDocumentFor($paul, 'QUO-2026-002');
+    $paulQuote->update(['status' => 'accepted']);
 
     $this->actingAs($marie)
         ->post(route('documents.convert-to-invoice', $paulQuote))
         ->assertNotFound();
 
-    $this->assertDatabaseMissing('documents', ['type' => 'facture']);
+    $this->assertDatabaseMissing('documents', ['type' => 'invoice']);
 }
 
 public function test_user_cannot_download_another_users_pdf(): void
@@ -134,7 +134,7 @@ public function test_user_cannot_download_another_users_pdf(): void
     $marie = User::factory()->create();
     $paul = User::factory()->create();
 
-    $paulDocument = $this->createDocumentFor($paul, 'DEV-2026-002');
+    $paulDocument = $this->createDocumentFor($paul, 'QUO-2026-002');
 
     $this->actingAs($marie)
         ->get(route('documents.pdf', $paulDocument))

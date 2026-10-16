@@ -21,10 +21,10 @@ class ClientController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nom' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
-            'adresse' => 'nullable|string|max:255',
-            'siret' => 'nullable|string|max:14',
+            'address' => 'nullable|string|max:255',
+            'tax_id' => 'nullable|string|max:14',
         ]);
 
         auth()->user()->clients()->create($validated);
@@ -50,10 +50,10 @@ class ClientController extends Controller
         $this->ensureOwnership($client);
 
         $validated = $request->validate([
-            'nom' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
-            'adresse' => 'nullable|string|max:255',
-            'siret' => 'nullable|string|max:14',
+            'address' => 'nullable|string|max:255',
+            'tax_id' => 'nullable|string|max:14',
         ]);
 
         $client->update($validated);

@@ -12,9 +12,9 @@ class Payment extends Model
 
     protected $fillable = [
         'document_id',
-        'montant',
+        'amount',
         'date',
-        'moyen_paiement',
+        'payment_method',
     ];
 
     protected $casts = [

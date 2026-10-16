@@ -12,10 +12,10 @@ class DocumentLine extends Model
 
     protected $fillable = [
         'document_id',
-        'designation',
-        'quantite',
-        'prix_unitaire',
-        'taux_tva',
+        'description',
+        'quantity',
+        'unit_price',
+        'vat_rate',
     ];
 
     public function document(): BelongsTo

@@ -14,26 +14,26 @@ class DocumentDeletionTest extends TestCase
     private function createDocument(User $user, string $type): Document
     {
         $client = $user->clients()->create([
-            'nom' => 'Test Client',
+            'name' => 'Test Client',
             'email' => 'client@example.com',
-            'adresse' => '1 rue de Test, 69000 Lyon',
-            'siret' => '12345678901234',
+            'address' => '1 rue de Test, 69000 Lyon',
+            'tax_id' => '12345678901234',
         ]);
 
         return $user->documents()->create([
             'type' => $type,
-            'numero' => $type === 'facture' ? 'FACT-2026-001' : 'DEV-2026-001',
+            'number' => $type === 'invoice' ? 'INV-2026-001' : 'QUO-2026-001',
             'client_id' => $client->id,
-            'statut' => 'brouillon',
-            'date_creation' => now(),
-            'date_echeance' => now()->addDays(30),
+            'status' => 'draft',
+            'issue_date' => now(),
+            'due_date' => now()->addDays(30),
         ]);
     }
 
     public function test_an_invoice_cannot_be_deleted(): void
     {
         $user = User::factory()->create();
-        $invoice = $this->createDocument($user, 'facture');
+        $invoice = $this->createDocument($user, 'invoice');
 
         $response = $this->actingAs($user)
             ->delete(route('documents.destroy', $invoice));
@@ -45,7 +45,7 @@ class DocumentDeletionTest extends TestCase
     public function test_a_draft_quote_can_be_deleted(): void
     {
         $user = User::factory()->create();
-        $quote = $this->createDocument($user, 'devis');
+        $quote = $this->createDocument($user, 'quote');
 
         $this->actingAs($user)
             ->delete(route('documents.destroy', $quote));

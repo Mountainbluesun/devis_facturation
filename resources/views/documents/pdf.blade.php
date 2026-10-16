@@ -20,27 +20,27 @@
 
     <div class="header">
         <div>
-            <h1>{{ $document->type === 'devis' ? 'Quote' : 'Invoice' }}</h1>
-            <p class="label">{{ $document->numero }}</p>
+            <h1>{{ $document->type === 'quote' ? 'Quote' : 'Invoice' }}</h1>
+            <p class="label">{{ $document->number }}</p>
         </div>
         <div class="text-right">
             <p class="label">Date</p>
-            <p>{{ $document->date_creation->format('d/m/Y') }}</p>
-            @if ($document->date_echeance)
+            <p>{{ $document->issue_date->format('Y-m-d') }}</p>
+            @if ($document->due_date)
                 <p class="label">Due date</p>
-                <p>{{ $document->date_echeance->format('d/m/Y') }}</p>
+                <p>{{ $document->due_date->format('Y-m-d') }}</p>
             @endif
         </div>
     </div>
 
     <div style="margin-bottom: 20px;">
         <p class="label">Client</p>
-        <p><strong>{{ $document->client->nom }}</strong></p>
-        @if ($document->client->adresse)
-            <p>{{ $document->client->adresse }}</p>
+        <p><strong>{{ $document->client->name }}</strong></p>
+        @if ($document->client->address)
+            <p>{{ $document->client->address }}</p>
         @endif
-        @if ($document->client->siret)
-            <p>Business ID (SIRET): {{ $document->client->siret }}</p>
+        @if ($document->client->tax_id)
+            <p>Business ID (SIRET): {{ $document->client->tax_id }}</p>
         @endif
     </div>
 

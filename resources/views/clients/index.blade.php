@@ -17,7 +17,7 @@
             <a href="{{ route('clients.show', $client) }}"
                class="flex items-center justify-between px-4 py-3 hover:bg-gray-50">
                 <div>
-                    <p class="font-medium">{{ $client->nom }}</p>
+                    <p class="font-medium">{{ $client->name }}</p>
                     <p class="text-sm text-gray-500">{{ $client->email ?? 'No email' }}</p>
                 </div>
                 <span class="text-gray-400 text-sm">{{ $client->documents_count ?? '' }}</span>
