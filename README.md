@@ -67,7 +67,6 @@ Tests run automatically on every push and pull request through GitHub Actions: t
 
 ## Known limitations / roadmap
 
-- No per-user data isolation: all authenticated users share the same clients and documents (single-tenant prototype)
 - No credit notes (cancelling an issued invoice)
 - No accounting export
 
