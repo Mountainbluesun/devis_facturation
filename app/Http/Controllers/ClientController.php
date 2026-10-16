@@ -9,7 +9,7 @@ class ClientController extends Controller
 {
     public function index()
     {
-        $clients = Client::latest()->paginate(15);
+        $clients = auth()->user()->clients()->latest()->paginate(15);
         return view('clients.index', compact('clients'));
     }
 
@@ -27,24 +27,28 @@ class ClientController extends Controller
             'siret' => 'nullable|string|max:14',
         ]);
 
-        Client::create($validated);
+        auth()->user()->clients()->create($validated);
 
         return redirect()->route('clients.index')->with('success', 'Client created successfully.');
     }
 
     public function show(Client $client)
     {
+        $this->ensureOwnership($client);
         $client->load('documents');
         return view('clients.show', compact('client'));
     }
 
     public function edit(Client $client)
     {
+        $this->ensureOwnership($client);
         return view('clients.edit', compact('client'));
     }
 
     public function update(Request $request, Client $client)
     {
+        $this->ensureOwnership($client);
+
         $validated = $request->validate([
             'nom' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
@@ -59,7 +63,14 @@ class ClientController extends Controller
 
     public function destroy(Client $client)
     {
-        $client->delete();
-        return redirect()->route('clients.index')->with('success', 'Client deleted.');
+         $this->ensureOwnership($client);
+         $client->delete();
+         return redirect()->route('clients.index')->with('success', 'Client deleted.');
     }
+
+
+    private function ensureOwnership(Client $client): void
+{
+    abort_unless($client->user_id == auth()->id(), 404);
+}
 }
