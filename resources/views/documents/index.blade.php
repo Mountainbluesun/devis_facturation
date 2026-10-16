@@ -25,3 +25,12 @@
         @empty
             <p class="px-4 py-6 text-center text-gray-500">No documents yet.</p>
         @endforelse
+
+            </div>
+
+    <div class="mt-6">
+        {{ $documents->links() }}
+    </div>
+
+@endsection
+

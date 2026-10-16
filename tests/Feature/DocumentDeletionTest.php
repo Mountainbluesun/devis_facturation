@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\Client;
 use App\Models\Document;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -12,16 +11,16 @@ class DocumentDeletionTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function createDocument(string $type): Document
+    private function createDocument(User $user, string $type): Document
     {
-        $client = Client::create([
+        $client = $user->clients()->create([
             'nom' => 'Test Client',
             'email' => 'client@example.com',
             'adresse' => '1 rue de Test, 69000 Lyon',
             'siret' => '12345678901234',
         ]);
 
-        return Document::create([
+        return $user->documents()->create([
             'type' => $type,
             'numero' => $type === 'facture' ? 'FACT-2026-001' : 'DEV-2026-001',
             'client_id' => $client->id,
@@ -34,7 +33,7 @@ class DocumentDeletionTest extends TestCase
     public function test_an_invoice_cannot_be_deleted(): void
     {
         $user = User::factory()->create();
-        $invoice = $this->createDocument('facture');
+        $invoice = $this->createDocument($user, 'facture');
 
         $response = $this->actingAs($user)
             ->delete(route('documents.destroy', $invoice));
@@ -46,7 +45,7 @@ class DocumentDeletionTest extends TestCase
     public function test_a_draft_quote_can_be_deleted(): void
     {
         $user = User::factory()->create();
-        $quote = $this->createDocument('devis');
+        $quote = $this->createDocument($user, 'devis');
 
         $this->actingAs($user)
             ->delete(route('documents.destroy', $quote));

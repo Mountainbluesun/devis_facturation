@@ -12,7 +12,7 @@ class DocumentController extends Controller
 {
     public function index()
     {
-        $documents = Document::with('client')->latest()->paginate(15);
+        $documents = auth()->user()->documents()->with('client')->latest()->paginate(15);
         return view('documents.index', compact('documents'));
     }
 
@@ -37,7 +37,7 @@ class DocumentController extends Controller
 
         $generator = new DocumentNumberGenerator();
 
-        $document = Document::create([
+        $document = auth()->user()->documents()->create([
             'type' => $validated['type'],
             'numero' => $generator->generate($validated['type']),
             'client_id' => $validated['client_id'],
@@ -55,12 +55,15 @@ class DocumentController extends Controller
 
     public function show(Document $document)
     {
+        $this->ensureOwnership($document);
         $document->load('client', 'lines', 'payments');
         return view('documents.show', compact('document'));
     }
 
     public function edit(Document $document)
     {
+        $this->ensureOwnership($document);
+
         if ($document->statut === 'paye') {
             return redirect()->route('documents.show', $document)
                 ->with('error', 'A paid document can no longer be edited.');
@@ -73,6 +76,8 @@ class DocumentController extends Controller
 
     public function update(Request $request, Document $document)
     {
+        $this->ensureOwnership($document);
+
         if ($document->statut === 'paye') {
             return redirect()->route('documents.show', $document)
                 ->with('error', 'A paid document can no longer be edited.Only a draft can be deleted.');
@@ -90,6 +95,8 @@ class DocumentController extends Controller
 
     public function destroy(Document $document)
     {
+        $this->ensureOwnership($document);
+
         if ($document->type === 'facture') {
            return redirect()->route('documents.index')
                ->with('error', 'An invoice cannot be deleted.');
@@ -102,9 +109,11 @@ class DocumentController extends Controller
         return redirect()->route('documents.index')->with('success', 'Document deleted.');
     }
 
-    // Action personnalisée, pas dans le CRUD standard
+    // Custom action, not part of standard CRUD
     public function convertToInvoice(Document $document)
     {
+        $this->ensureOwnership($document);
+
         try {
             $facture = $document->convertToInvoice();
             return redirect()->route('documents.show', $facture)
@@ -119,10 +128,17 @@ class DocumentController extends Controller
 
 public function downloadPdf(Document $document)
 {
+    $this->ensureOwnership($document);
+
     $document->load('client', 'lines');
 
     $pdf = Pdf::loadView('documents.pdf', compact('document'));
 
     return $pdf->download($document->numero . '.pdf');
+}
+
+private function ensureOwnership(Document $document): void
+{
+    abort_unless($document->user_id == auth()->id(), 404);
 }
 }

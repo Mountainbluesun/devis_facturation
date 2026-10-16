@@ -18,6 +18,7 @@ class Document extends Model
         'type',
         'numero',
         'client_id',
+        'user_id',
         'statut',
         'date_creation',
         'date_echeance',
@@ -31,6 +32,11 @@ class Document extends Model
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function lines(): HasMany
@@ -89,6 +95,7 @@ public function convertToInvoice(): self
             'type' => 'facture',
             'numero' => $generator->generate('facture'),
             'client_id' => $this->client_id,
+            'user_id' => $this->user_id,
             'statut' => 'brouillon',
             'date_creation' => now(),
             'date_echeance' => now()->addDays(30),
