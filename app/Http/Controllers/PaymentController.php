@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Document;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
     public function store(Request $request, Document $document)
     {
+        abort_unless($document->user_id == auth()->id(), 404);
+
         $validated = $request->validate([
             'amount' => 'required|numeric|min:0.01',
             'date' => 'required|date',
@@ -30,8 +33,11 @@ class PaymentController extends Controller
         }
     }
 
-    public function destroy(Document $document, \App\Models\Payment $payment)
+    public function destroy(Document $document, Payment $payment)
     {
+        abort_unless($document->user_id == auth()->id(), 404);
+        abort_unless($payment->document_id == $document->id, 404);
+
         $payment->delete();
 
         // If a payment is cancelled, the document can no longer be "paid"
