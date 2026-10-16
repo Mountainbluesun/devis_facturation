@@ -140,6 +140,44 @@ public function test_user_cannot_download_another_users_pdf(): void
         ->get(route('documents.pdf', $paulDocument))
         ->assertNotFound();
 }
+public function test_user_cannot_create_a_document_for_another_users_client(): void
+{
+    $marie = User::factory()->create();
+    $paul = User::factory()->create();
+
+    $paulClient = $paul->clients()->create(['name' => 'Paul Client']);
+
+    $response = $this->actingAs($marie)->post(route('documents.store'), [
+        'type' => 'quote',
+        'client_id' => $paulClient->id,
+        'lines' => [
+            [
+                'description' => 'Service A',
+                'quantity' => 1,
+                'unit_price' => 100,
+                'vat_rate' => 20,
+            ],
+        ],
+    ]);
+
+    $response->assertSessionHasErrors('client_id');
+    $this->assertDatabaseMissing('documents', ['client_id' => $paulClient->id]);
+}
+
+public function test_create_form_only_lists_the_users_own_clients(): void
+{
+    $marie = User::factory()->create();
+    $paul = User::factory()->create();
+
+    $marie->clients()->create(['name' => 'Marie Client']);
+    $paul->clients()->create(['name' => 'Paul Client']);
+
+    $response = $this->actingAs($marie)->get(route('documents.create'));
+
+    $response->assertSee('Marie Client');
+    $response->assertDontSee('Paul Client');
+}
+
 
 
 }

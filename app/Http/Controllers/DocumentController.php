@@ -7,6 +7,7 @@ use App\Models\Client;
 use App\Services\DocumentNumberGenerator;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Validation\Rule;
 
 class DocumentController extends Controller
 {
@@ -18,7 +19,7 @@ class DocumentController extends Controller
 
     public function create()
     {
-        $clients = Client::orderBy('name')->get();
+        $clients = auth()->user()->clients()->orderBy('name')->get();
         return view('documents.create', compact('clients'));
     }
 
@@ -26,7 +27,7 @@ class DocumentController extends Controller
     {
         $validated = $request->validate([
             'type' => 'required|in:quote,invoice',
-            'client_id' => 'required|exists:clients,id',
+            'client_id' => ['required', Rule::exists('clients', 'id')->where('user_id', auth()->id())],
             'due_date' => 'nullable|date',
             'lines' => 'required|array|min:1',
             'lines.*.description' => 'required|string|max:255',
