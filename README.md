@@ -65,6 +65,12 @@ Tests run automatically on every push and pull request through GitHub Actions: t
 ### Generated invoice PDF
 ![Invoice PDF](docs/pdf-facture.png)
 
+## Security
+
+- **Data isolation:** every client, document and payment belongs to a user. Other users' records return a 404, and this behavior is covered by automated tests.
+- **Server patching:** as of October 2026, the production server runs PHP 8.3 with the fix for the critical PHP vulnerabilities CVE-2026-109618 and CVE-2026-109619 ("PHP2Shell"), applied through Ubuntu's patched packages.
+- **Demo:** the live demo is for demonstration only. Please do not enter real data.
+
 ## Known limitations / roadmap
 
 - No credit notes (cancelling an issued invoice)
